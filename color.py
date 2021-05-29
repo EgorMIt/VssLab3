@@ -28,30 +28,19 @@ def process(frame, start_point, end_point):
         s_h, v_h, s_l, v_l = 255, 255, 50, 50
         lower_h, higher_h = colors[i]
 
-        green_upper = np.array([higher_h, s_h, v_h])
-        green_lower = np.array([lower_h, s_l, v_l])
+        upper = np.array([higher_h, s_h, v_h])
+        lower = np.array([lower_h, s_l, v_l])
         mask_frame = hsv_frame[start_point[1]:end_point[1] + 1, start_point[0]:end_point[0] + 1]
-        mask_green = cv2.inRange(mask_frame, green_lower, green_upper)
+        mask = cv2.inRange(mask_frame, lower, upper)
 
-        green_rate = np.count_nonzero(mask_green) / (rect_size * rect_size)
-        if green_rate > 0.9:
+        rate = np.count_nonzero(mask) / (rect_size * rect_size)
+        if rate > 0.9:
             color_text = i
-    # color_text.replace('1', '')
-    # color_text.replace('2', '')
-
-    org = end_point
     font = cv2.FONT_HERSHEY_SIMPLEX
     font_scale = 0.7
 
-    av_hue = np.average(mask_frame[:, :, 0])
-    av_sat = np.average(mask_frame[:, :, 1])
-    av_val = np.average(mask_frame[:, :, 2])
-    average = [int(av_hue), int(av_sat), int(av_val)]
-
-    text = cv2.putText(rect, color_text, (10, 50), font, font_scale, color, thickness,
-                       cv2.LINE_AA)
-    frame = text
-    return frame
+    cv2.putText(rect, color_text, (10, 50), font, font_scale, color, thickness,
+                cv2.LINE_AA)
 
 
 def main():
@@ -85,7 +74,7 @@ def main():
 
         # Exit if "4" is pressed
         k = cv2.waitKey(1) & 0xFF
-        if k == 52:  # ord 4
+        if k == ord('4'):  # ord 4
             # Quit
             print('Good Bye!')
             break
